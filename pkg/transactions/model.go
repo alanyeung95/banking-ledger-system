@@ -8,6 +8,7 @@ const (
 	Deposit       operationType = "deposit"
 	Withdraw operationType = "withdraw"
 	Transfer operationType = "transfer"
+	Undo operationType = "undo"
 )
 
 type Transaction struct {
@@ -15,6 +16,7 @@ type Transaction struct {
 	Time time.Time     `json:"time"    bson:"time"`
 	Operation     operationType `json:"operation"    bson:"operation"`
 	Body Detail `json:"body"    bson:"body"`
+	Notes string `json:"notes"    bson:"notes"`
 }
 
 type Detail struct {

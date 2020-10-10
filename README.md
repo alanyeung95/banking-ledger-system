@@ -29,7 +29,7 @@ the service will be running on `localhost:3000`
 - [x] Make a withdraw
 - [x] Make a deposit
 - [x] Make a transfer between two accounts
-- [ ] Fix a withdrawal or deposit transaction
+- [x] Fix a withdrawal or deposit transaction (here I assume `fix` mean `undo`)
 - [ ] View current balance for Customer
 - [x] View transaction history for Customer
 - [x] View transaction history for Operation Team

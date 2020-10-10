@@ -59,3 +59,16 @@ func (r *TransactionRepository) FindAll(ctx context.Context, id string, asc int)
 	}
 	return transactionList, nil
 }
+
+// Find returns the Transaction record being successfully created or updated
+func (r *TransactionRepository) Find(ctx context.Context, id string) (*transactions.Transaction, error) {
+	var result transactions.Transaction
+	filter := bson.M{"_id": id}
+	if err := r.collection.FindOne(ctx, filter).Decode(&result); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, err
+		}
+		return nil, err
+	}
+	return &result, nil
+}

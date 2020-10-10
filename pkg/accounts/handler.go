@@ -19,7 +19,7 @@ func NewHandler(srv Service, transSrv transactions.Service) http.Handler {
 	r.Post("/create", h.handleCreateAccount)
 	r.Post("/create-admin", h.handleCreateAdminAccount)
 	r.Post("/transaction", h.handleTransaction)
-
+	r.Post("/transaction/{id}/undo", h.handleUndoTransaction)
 	return r
 }
 
@@ -128,6 +128,75 @@ func (h *handlers) handleTransaction(w http.ResponseWriter, r *http.Request) {
 
 	transaction.Time = time.Now()
 	_, err := h.transSrv.RecordTransaction(ctx, r, &transaction)
+	if err != nil {
+		kithttp.DefaultErrorEncoder(ctx, err, w)
+		return
+	}
+}
+
+func (h *handlers) handleUndoTransaction(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	id := chi.URLParam(r, "id")
+
+	transaction, err := h.transSrv.GetTransactionByID(ctx, r, id)
+	if err != nil {
+		kithttp.DefaultErrorEncoder(ctx, err, w)
+		return
+	}
+
+	switch transaction.Operation {
+	case transactions.Deposit:
+		account, err := h.svc.UpdateBalance(ctx, r, transaction.Body.To, - transaction.Body.Amount )
+		if err != nil {
+			kithttp.DefaultErrorEncoder(ctx, err, w)
+			return
+		}
+
+		transaction.Operation = transactions.Withdraw
+		transaction.Body.From = transaction.Body.To
+		transaction.Body.To = ""
+
+		transaction.Time = time.Now()
+		_, err = h.transSrv.RecordTransaction(ctx, r, transaction)
+		if err != nil {
+			kithttp.DefaultErrorEncoder(ctx, err, w)
+			return
+		}
+
+		kithttp.EncodeJSONResponse(ctx, w, account)		
+
+	case transactions.Withdraw:
+		account, err := h.svc.UpdateBalance(ctx, r, transaction.Body.From, transaction.Body.Amount )
+		if err != nil {
+			kithttp.DefaultErrorEncoder(ctx, err, w)
+			return
+		}
+
+		transaction.Operation = transactions.Deposit
+		transaction.Body.To = transaction.Body.From
+		transaction.Body.From = ""
+
+		transaction.Time = time.Now()
+		_, err = h.transSrv.RecordTransaction(ctx, r, transaction)
+		if err != nil {
+			kithttp.DefaultErrorEncoder(ctx, err, w)
+			return
+		}
+
+		kithttp.EncodeJSONResponse(ctx, w, account)	
+
+	default:
+		kithttp.EncodeJSONResponse(ctx, w, "error: unsupport operation, only withdraw or deposit operation is allowed to be undo")
+		return 		
+	}
+
+	transaction.Operation = transactions.Undo
+	transaction.Body.From = ""
+	transaction.Body.To = ""
+	transaction.Body.Amount = 0
+	transaction.Notes = id
+
+	_, err = h.transSrv.RecordTransaction(ctx, r, transaction)
 	if err != nil {
 		kithttp.DefaultErrorEncoder(ctx, err, w)
 		return
