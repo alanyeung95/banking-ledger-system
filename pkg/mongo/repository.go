@@ -78,3 +78,12 @@ func findAndUpdateOne(ctx context.Context, c *mongo.Collection, filter interface
 	}
 	return nil
 }
+
+func findAll(ctx context.Context, c *mongo.Collection, filter interface{}, results interface{}, opts ...*options.FindOptions) error {
+	cursor, err := c.Find(ctx, filter, opts...)
+	if err != nil {
+		return err
+	}
+
+	return cursor.All(ctx, results)
+}

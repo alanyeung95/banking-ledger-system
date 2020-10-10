@@ -5,6 +5,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/alanyeung95/banking-ledger-system/pkg/transactions"
 
@@ -38,4 +39,23 @@ func (r *TransactionRepository) Upsert(ctx context.Context, id string, Transacti
 		return nil, err
 	}
 	return &result, nil
+}
+
+// Upsert returns the Transaction records that matching the criteria
+func (r *TransactionRepository) FindAll(ctx context.Context, id string, asc int) ([]transactions.Transaction, error) {
+	var transactionList []transactions.Transaction
+	filter := bson.M{
+		"$or": bson.A{
+			bson.M{"body.from": id},
+			bson.M{"body.to": id},
+		},
+	}
+
+	findOption := options.Find()
+	findOption.SetSort(bson.M{"time": asc})
+
+	if err := findAll(ctx, r.collection, filter, &transactionList, findOption); err != nil{
+		return nil, err
+	}
+	return transactionList, nil
 }

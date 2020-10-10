@@ -48,8 +48,8 @@ func main() {
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("Crypto.com Ops Team Back End Engineering Coding Cahllenge"))
 		})
-		r.Mount("/accounts", accounts.NewHandler(accountSrv))
-		r.Mount("/services", transactions.NewHandler(transSrv))
+		r.Mount("/accounts", accounts.NewHandler(accountSrv, transSrv))
+		r.Mount("/transactions", transactions.NewHandler(transSrv))
 	})
 
 	addr := fmt.Sprintf(":%d", 3000)

@@ -1,5 +1,7 @@
 package transactions
 
+import "time"
+
 type operationType string
 
 const (
@@ -10,7 +12,7 @@ const (
 
 type Transaction struct {
 	ID       string `json:"id"    bson:"_id"`
-	UserID string `json:"userID"    bson:"userID"`
+	Time time.Time     `json:"time"    bson:"time"`
 	Operation     operationType `json:"operation"    bson:"operation"`
 	Body Detail `json:"body"    bson:"body"`
 }

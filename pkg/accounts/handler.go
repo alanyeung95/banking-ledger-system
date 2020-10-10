@@ -3,6 +3,7 @@ package accounts
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -11,8 +12,8 @@ import (
 )
 
 // NewHandler return handler that serves the account service
-func NewHandler(srv Service) http.Handler {
-	h := handlers{srv}
+func NewHandler(srv Service, transSrv transactions.Service) http.Handler {
+	h := handlers{srv, transSrv}
 	r := chi.NewRouter()
 	//r.Get("/{id}", h.handleGetAccountBalance)
 	r.Post("/create", h.handleCreateAccount)
@@ -24,6 +25,7 @@ func NewHandler(srv Service) http.Handler {
 
 type handlers struct {
 	svc Service
+	transSrv transactions.Service
 }
 
 func (h *handlers) handleGetAccountBalance(w http.ResponseWriter, r *http.Request) {
@@ -91,7 +93,7 @@ func (h *handlers) handleTransaction(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		kithttp.EncodeJSONResponse(ctx, w, account)
-		return
+
 	case transactions.Withdraw:
 		account, err := h.svc.GetAccountByID(ctx, r, transaction.Body.From)
 		if err != nil {
@@ -104,7 +106,7 @@ func (h *handlers) handleTransaction(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		kithttp.EncodeJSONResponse(ctx, w, account)
-		return
+
 	case transactions.Transfer:
 		_, err := h.svc.GetAccountByID(ctx, r, transaction.Body.From)
 		if err != nil {
@@ -118,11 +120,16 @@ func (h *handlers) handleTransaction(w http.ResponseWriter, r *http.Request) {
 		}		
 		account, err := h.svc.TransferBalance(ctx, r, transaction.Body.From, transaction.Body.To, transaction.Body.Amount )
 		kithttp.EncodeJSONResponse(ctx, w, account)
+
 	default:
 		kithttp.EncodeJSONResponse(ctx, w, "error: unsupport operation")
 		return 
 	}
 
-
-	//kithttp.EncodeJSONResponse(ctx, w, "123")
+	transaction.Time = time.Now()
+	_, err := h.transSrv.RecordTransaction(ctx, r, &transaction)
+	if err != nil {
+		kithttp.DefaultErrorEncoder(ctx, err, w)
+		return
+	}
 }
