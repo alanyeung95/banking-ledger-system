@@ -15,7 +15,7 @@ import (
 func NewHandler(srv Service, transSrv transactions.Service) http.Handler {
 	h := handlers{srv, transSrv}
 	r := chi.NewRouter()
-	//r.Get("/{id}", h.handleGetAccountBalance)
+	r.Get("/{id}", h.handleGetAccountBalance)
 	r.Post("/create", h.handleCreateAccount)
 	r.Post("/create-admin", h.handleCreateAdminAccount)
 	r.Post("/transaction", h.handleTransaction)
@@ -30,9 +30,21 @@ type handlers struct {
 
 func (h *handlers) handleGetAccountBalance(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	//id := chi.URLParam(r, "id")
+	id := chi.URLParam(r, "id")
 
-	kithttp.EncodeJSONResponse(ctx, w, "wip")
+	account, err := h.svc.GetAccountByID(ctx, r, id)
+	if err != nil {
+		kithttp.DefaultErrorEncoder(ctx, err, w)
+		return
+	}
+
+	response := AccountReadModel{
+		ID: account.ID,
+		Name: account.Name,
+		Balance: account.Balance,
+	}
+	
+	kithttp.EncodeJSONResponse(ctx, w, response)
 }
 
 func (h *handlers) handleCreateAccount(w http.ResponseWriter, r *http.Request) {
