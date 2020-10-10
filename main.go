@@ -9,6 +9,7 @@ import (
 
 	"github.com/alanyeung95/banking-ledger-system/pkg/mongo"
 	"github.com/alanyeung95/banking-ledger-system/pkg/accounts"
+	"github.com/alanyeung95/banking-ledger-system/pkg/transactions"
 
 
 )
@@ -32,6 +33,14 @@ func main() {
 		return
 	}
 
+	
+	transSrv, err := newTransactionSrv(mongoClient)
+	if err != nil {
+		fmt.Println("Cannot initialize account service: " + err.Error())
+		return
+	}
+
+
 	r := chi.NewRouter()
 
 	// Route - API
@@ -40,6 +49,7 @@ func main() {
 			w.Write([]byte("Crypto.com Ops Team Back End Engineering Coding Cahllenge"))
 		})
 		r.Mount("/accounts", accounts.NewHandler(accountSrv))
+		r.Mount("/services", transactions.NewHandler(transSrv))
 	})
 
 	addr := fmt.Sprintf(":%d", 3000)
@@ -56,3 +66,15 @@ func newAccountSrv(client *mongodriver.Client) (accounts.Service, error) {
 
 	return srv, nil
 }
+
+func newTransactionSrv(client *mongodriver.Client) (transactions.Service, error) {
+	transactionRepository, err := mongo.NewTransactionRepository(client, "banking", "transactions")
+	if err != nil {
+		return nil, err
+	}
+
+	srv := transactions.NewService( transactionRepository)
+
+	return srv, nil
+}
+ 

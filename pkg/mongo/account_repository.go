@@ -39,3 +39,34 @@ func (r *AccountRepository) Upsert(ctx context.Context, id string, Account accou
 	}
 	return &result, nil
 }
+
+// Find returns the Account record being successfully created or updated
+func (r *AccountRepository) Find(ctx context.Context, id string) (*accounts.Account, error) {
+	var result accounts.Account
+	filter := bson.M{"_id": id}
+	if err := r.collection.FindOne(ctx, filter).Decode(&result); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, err
+		}
+		return nil, err
+	}
+	return &result, nil
+}
+
+// Update returns the Account record being successfully updated
+func (r *AccountRepository) UpdateBalance(ctx context.Context, id string, amount int) (*accounts.Account, error) {
+	var result accounts.Account
+	filter := bson.M{"_id": id}
+	update := bson.M{
+		"$inc": bson.M{
+			"balance": amount,
+		},
+	}
+	
+	err :=  findAndUpdateOne(ctx, r.collection, filter, update, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result,nil
+}

@@ -54,3 +54,27 @@ func upsert(ctx context.Context, c *mongo.Collection, filter interface{}, update
 	}
 	return nil
 }
+
+func findOne(ctx context.Context, c *mongo.Collection, filter interface{}, result interface{}) error {
+	err := c.FindOne(ctx, filter).Decode(result)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return err
+		}
+		return err
+	}
+
+	return nil
+}
+
+// findAndUpdateOne update the target document and return updated document
+func findAndUpdateOne(ctx context.Context, c *mongo.Collection, filter interface{}, update interface{}, result interface{}) error {
+	err := c.FindOneAndUpdate(ctx, filter, update, options.FindOneAndUpdate().SetReturnDocument(options.After)).Decode(result)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return err
+		}
+		return err
+	}
+	return nil
+}

@@ -24,10 +24,10 @@ the service will be running on `localhost:3000`
 
 # Priority list
 ## Must do
-- [ ] Create a new bank account
-- [ ] Make a withdrawal
-- [ ] Make a deposit
-- [ ] Make a transfer between two accounts
+- [x] Create a new bank account
+- [x] Make a withdraw
+- [x] Make a deposit
+- [x] Make a transfer between two accounts
 - [ ] Fix a withdrawal or deposit transaction
 - [ ] View current balance for Customer
 - [ ] View transaction history for Customer
@@ -40,4 +40,4 @@ the service will be running on `localhost:3000`
 - [ ] dockerize API service
 - [ ] dockerize mongo service
 - [ ] better error encoding format
-
+- [ ] handle atomic operation

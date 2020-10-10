@@ -2,7 +2,6 @@ package accounts
 
 type PermissionGroup string
 
-// A list of common expected errors.
 const (
 	GeneralUser       PermissionGroup = "general"
 	OperationTeam PermissionGroup = "operation"
