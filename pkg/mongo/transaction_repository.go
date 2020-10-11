@@ -48,6 +48,7 @@ func (r *TransactionRepository) FindAll(ctx context.Context, id string, asc int)
 		"$or": bson.A{
 			bson.M{"body.from": id},
 			bson.M{"body.to": id},
+			bson.M{"triggeredBy": id},
 		},
 	}
 
