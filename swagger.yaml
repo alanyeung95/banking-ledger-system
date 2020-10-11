@@ -148,12 +148,17 @@ components:
       type: object
       properties:
         id:
-          type: string            
+          type: string    
+          example: "3d5d63f5-8d25-4109-ad3f-259527108dcd"
         time:
           type: string            
         operation:
           type: string
           enum: [deposit, withdraw, transfer]
+        triggeredBy:
+          type: string
+          description: account id that trigger/request this transaction
+          example: 8c230e58-49e1-47ab-add5-f937b40f9123
         body:
           type: object
           properties:
@@ -165,7 +170,11 @@ components:
               type: integer   
             notes:
               type: string        
+        notes:
+          type: string
+          description: additional information
+          example: "fix transaction: 04b3d1c0-23ea-4e69-9f6d-54ac7297ac0b"
     Transactions:
       type: array
       items:
-        $ref: "#/components/schemas/Transaction"          
+        $ref: "#/components/schemas/Transaction"
