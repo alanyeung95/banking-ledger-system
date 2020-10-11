@@ -218,7 +218,7 @@ func (h *handlers) handleUndoTransaction(w http.ResponseWriter, r *http.Request)
 
 func (h *handlers) handleGetTransactionsByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	id := r.URL.Query().Get("id")
+	id := r.URL.Query().Get("account_id")
     asc, err := strconv.Atoi( r.URL.Query().Get("asc"))
     if err != nil  {
 		asc = -1

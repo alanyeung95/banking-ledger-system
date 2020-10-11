@@ -12,7 +12,7 @@ paths:
     get:
       tags:
         - "Accounts"
-      summary: View current balance for Customer
+      summary: View current balance for customer
       parameters:
         - in: path
           name: id
@@ -64,6 +64,67 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AccountReadModel"           
+
+  /transactions:      
+    get:
+      tags:
+        - "Transactions"
+      summary: Get transactions basic on input account id
+      parameters:
+        - in: query
+          name: account_id
+          schema:
+            type: string
+          description: The tareget account id for getting transactions
+        - in: query
+          name: asc
+          schema:
+            type: integer   
+            enum: [1,-1]
+          description: Sorting option for transaction time, 1 means the earliest record will be the first result, -1 mean latest record will be the first result.
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transactions"
+    post:
+      tags:
+        - "Transactions"
+      summary: Perform withdraw, deposit and transfer operation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Transaction"           
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountReadModel"
+                
+  /transactions/{id}/undo:        
+    post:
+      tags:
+        - "Transactions"
+      summary: Undo a transaction, should be performed by operation team only. It will return an updated balance of the account
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true            
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountReadModel"
                 
 components:
   schemas:
@@ -83,4 +144,28 @@ components:
           type: string               
         password:
           type: string      
-          
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string            
+        time:
+          type: string            
+        operation:
+          type: string
+          enum: [deposit, withdraw, transfer]
+        body:
+          type: object
+          properties:
+            from:
+              type: string               
+            to:
+              type: string      
+            amount:
+              type: integer   
+            notes:
+              type: string        
+    Transactions:
+      type: array
+      items:
+        $ref: "#/components/schemas/Transaction"          
