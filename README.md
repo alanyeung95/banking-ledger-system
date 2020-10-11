@@ -6,11 +6,15 @@ This is a demo project/assessment for Crypto.com Ops Team Back End Engineering C
 2. MongoDB running on `localhost:27017` (sorry you have to install it manually at this stage)
 
 # Usage
-Run the API server 
+## Run the API server 
 
 `docker-compose up`
 
 the service will be running on `localhost:3000`
+
+## Run test cases
+
+`go test -v`
 
 # Assumption
 
