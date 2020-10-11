@@ -45,11 +45,7 @@ func main() {
 
 	// Route - API
 	r.Route("/", func(r chi.Router) {
-		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("Crypto.com Ops Team Back End Engineering Coding Cahllenge"))
-		})
-		r.Mount("/accounts", accounts.NewHandler(accountSrv, transSrv))
-		r.Mount("/transactions", transactions.NewHandler(transSrv))
+		r.Mount("/", accounts.NewHandler(accountSrv, transSrv))
 	})
 
 	addr := fmt.Sprintf(":%d", 3000)

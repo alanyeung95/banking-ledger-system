@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+	"strconv"
 
 	"github.com/go-chi/chi"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -15,11 +16,17 @@ import (
 func NewHandler(srv Service, transSrv transactions.Service) http.Handler {
 	h := handlers{srv, transSrv}
 	r := chi.NewRouter()
-	r.Get("/{id}", h.handleGetAccountBalance)
-	r.Post("/create", h.handleCreateAccount)
-	r.Post("/create-admin", h.handleCreateAdminAccount)
-	r.Post("/transaction", h.handleTransaction)
-	r.Post("/transaction/{id}/undo", h.handleUndoTransaction)
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Crypto.com Ops Team Back End Engineering Coding Cahllenge"))
+	})
+
+	r.Get("/accounts/{id}", h.handleGetAccountBalance)
+	r.Post("/accounts/create", h.handleCreateAccount)
+	r.Post("/accounts/create-admin", h.handleCreateAdminAccount)
+	
+	r.Post("/transactions", h.handleTransaction)
+	r.Post("/transactions/{id}/undo", h.handleUndoTransaction)
+	r.Get("/transactions", h.handleGetTransactionsByID)	
 	return r
 }
 
@@ -43,7 +50,7 @@ func (h *handlers) handleGetAccountBalance(w http.ResponseWriter, r *http.Reques
 		Name: account.Name,
 		Balance: account.Balance,
 	}
-	
+
 	kithttp.EncodeJSONResponse(ctx, w, response)
 }
 
@@ -213,4 +220,20 @@ func (h *handlers) handleUndoTransaction(w http.ResponseWriter, r *http.Request)
 		kithttp.DefaultErrorEncoder(ctx, err, w)
 		return
 	}
+}
+
+func (h *handlers) handleGetTransactionsByID(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	id := r.URL.Query().Get("id")
+    asc, err := strconv.Atoi( r.URL.Query().Get("asc"))
+    if err != nil  {
+		asc = -1
+	}	
+
+	transactionList, err := h.transSrv.GetTransactionsByID(ctx, r, id, asc)
+	if err != nil{
+		kithttp.DefaultErrorEncoder(ctx, err, w)
+		return
+	}
+	kithttp.EncodeJSONResponse(ctx, w, transactionList)
 }
