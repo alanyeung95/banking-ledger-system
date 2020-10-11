@@ -23,7 +23,7 @@ func NewHandler(srv Service, transSrv transactions.Service) http.Handler {
 	r.Get("/accounts/{id}", h.handleGetAccountBalance)
 	r.Post("/accounts/create", h.handleCreateAccount)
 	r.Post("/accounts/create-admin", h.handleCreateAdminAccount)
-	
+
 	r.Post("/transactions", h.handleTransaction)
 	r.Post("/transactions/{id}/undo", h.handleUndoTransaction)
 	r.Get("/transactions", h.handleGetTransactionsByID)	
@@ -63,10 +63,16 @@ func (h *handlers) handleCreateAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := h.svc.CreateAccount(ctx, r, &model)
+	newAccount, err := h.svc.CreateAccount(ctx, r, &model)
 	if err != nil {
 		kithttp.DefaultErrorEncoder(ctx, err, w)
 		return
+	}
+
+	response := AccountReadModel{
+		ID: newAccount.ID,
+		Name: newAccount.Name,
+		Balance: newAccount.Balance,
 	}
 
 	kithttp.EncodeJSONResponse(ctx, w, response)
@@ -81,10 +87,16 @@ func (h *handlers) handleCreateAdminAccount(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	response, err := h.svc.CreateAdminAccount(ctx, r, &model)
+	newAccount, err := h.svc.CreateAdminAccount(ctx, r, &model)
 	if err != nil {
 		kithttp.DefaultErrorEncoder(ctx, err, w)
 		return
+	}
+
+	response := AccountReadModel{
+		ID: newAccount.ID,
+		Name: newAccount.Name,
+		Balance: newAccount.Balance,
 	}
 
 	kithttp.EncodeJSONResponse(ctx, w, response)
