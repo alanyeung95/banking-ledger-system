@@ -8,125 +8,79 @@ servers:
   - url: http://localhost:{port}
 
 paths:
-  /:        
+  /accounts/{id}:        
+    get:
+      tags:
+        - "Accounts"
+      summary: View current balance for Customer
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true      
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountReadModel"
+                
+  /accounts/create:        
     post:
       tags:
-        - "Item"
-      summary: Create an new item
+        - "Accounts"
+      summary: Create account for customer
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Item"
+              $ref: "#/components/schemas/AccountCreateBody"      
       responses:
         "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Item"
-        "404":
-          $ref: "#/components/responses/NotFound"
-  /{id}:
-    get:
-      tags:
-        - "Item"
-      summary: Get an item by ID
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-      responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Item"
-        "404":
-          $ref: "#/components/responses/NotFound"
-  /{id}/raw:
-    get:
-      tags:
-        - "Item"
-      summary: Get an item text file by ID
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-      responses:
-        "200":
-          description: Successful operation
-          content:
-            text/plain:
-              schema:
-                example: "ID: e200e685-2da8-4470-b848-59f363a526b2\nName: test-name-1\nPrice: 234"
-        "404":
-          $ref: "#/components/responses/NotFound"          
+                $ref: "#/components/schemas/AccountReadModel"              
 
+  /accounts/create-admin:        
+    post:
+      tags:
+        - "Accounts"
+      summary: Create account for customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountCreateBody"      
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountReadModel"           
+                
 components:
   schemas:
-    Item:
-      description: Demo object
+    AccountReadModel:
       type: object
       properties:
         id:
           type: string
         name:
           type: string               
-        price:
+        balance:
           type: integer       
-        components:
-          type: array
-          items:
-            $ref: "#/components/schemas/Component"
-    Component:
-      description: Component item
-      type: object
-      properties:        
-        name:
-          type: string        
-    Error:
-      description: An error information
+    AccountCreateBody:
       type: object
       properties:
         name:
-          type: string
-        code:
-          type: integer
-        status:
-          type: integer
-        message:
-          type: string
-        info:
-          description: Extra information related to the error
-          type: object
+          type: string               
+        password:
+          type: string      
           
-  securitySchemes:
-    AccessTokenAuth:
-      type: apiKey
-      in: header
-      name: X-Access-Token
-    CookieAuth:
-      type: apiKey
-      in: cookie
-      name: TOKEN
-      
-  responses:
-    BadRequest:
-      description: The format of request is not correct
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
-    NotFound:
-      description: The format of request is correct, but the resource requested cannot be found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
