@@ -26,7 +26,12 @@ func NewHandler(srv Service, transSrv transactions.Service) http.Handler {
 
 	r.Post("/transactions", h.handleTransaction)
 	r.Post("/transactions/{id}/undo", h.handleUndoTransaction)
-	r.Get("/transactions", h.handleGetTransactionsByID)	
+	r.Get("/transactions", h.handleGetAccountTransactions)	
+
+	// delete APIs are just for testing clean up
+	r.Delete("/accounts/{id}", h.handleDeleteAccountByID)
+	r.Delete("/accounts/{id}/transactions", h.handleDeleteAccountTransactions)
+
 	return r
 }
 
@@ -213,7 +218,7 @@ func (h *handlers) handleUndoTransaction(w http.ResponseWriter, r *http.Request)
 		transaction.TriggeredBy = triggeredBy
 		transaction.Time = time.Now()
 		transaction.Notes = "fix transaction: " + id
-		
+
 		_, err = h.transSrv.RecordTransaction(ctx, r, transaction)
 		if err != nil {
 			kithttp.DefaultErrorEncoder(ctx, err, w)
@@ -228,7 +233,7 @@ func (h *handlers) handleUndoTransaction(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func (h *handlers) handleGetTransactionsByID(w http.ResponseWriter, r *http.Request) {
+func (h *handlers) handleGetAccountTransactions(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	id := r.URL.Query().Get("account_id")
     asc, err := strconv.Atoi( r.URL.Query().Get("asc"))
@@ -242,6 +247,32 @@ func (h *handlers) handleGetTransactionsByID(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	kithttp.EncodeJSONResponse(ctx, w, transactionList)
+}
+
+func (h *handlers) handleDeleteAccountByID(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	id := chi.URLParam(r, "id")
+
+	err := h.svc.DeleteAccountByID(ctx, r, id)
+	if err != nil {
+		kithttp.DefaultErrorEncoder(ctx, err, w)
+		return
+	}
+
+	kithttp.EncodeJSONResponse(ctx, w, true)
+}
+
+func (h *handlers) handleDeleteAccountTransactions(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	id := chi.URLParam(r, "id")
+
+	err := h.transSrv.DeleteTransactions(ctx, r, id)
+	if err != nil {
+		kithttp.DefaultErrorEncoder(ctx, err, w)
+		return
+	}
+
+	kithttp.EncodeJSONResponse(ctx, w, true)
 }
 
 func convertToAccountReadModel(account *Account) *AccountReadModel {

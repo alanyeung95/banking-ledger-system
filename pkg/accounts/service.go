@@ -16,8 +16,7 @@ type Service interface {
 	GetAccountByID(ctx context.Context, r *http.Request, id string) (*Account, error)
 	UpdateBalance(ctx context.Context, r *http.Request, id string, amount int) (*Account, error)
 	TransferBalance(ctx context.Context, r *http.Request, from string, to string, amount int) (*Account, error)
-
-//	ProcessTransaction(ctx context.Context, r *http.Request, transcation *Transaction) (*Account, error)
+	DeleteAccountByID(ctx context.Context, r *http.Request, from string) error
 }
 
 type service struct {
@@ -76,4 +75,8 @@ func (s *service) TransferBalance(ctx context.Context, r *http.Request, from str
 		return nil, err
 	}		
 	return sourceAccount, nil
+}
+
+func (s *service) DeleteAccountByID(ctx context.Context, r *http.Request, id string)  error {
+	return s.repository.Delete(ctx, id)
 }

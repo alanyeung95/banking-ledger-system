@@ -70,3 +70,14 @@ func (r *AccountRepository) UpdateBalance(ctx context.Context, id string, amount
 
 	return &result,nil
 }
+
+// Delete will remove Account that matching the chosen filter
+func (r *AccountRepository) Delete(ctx context.Context, id string) error {
+	filter := bson.M{"_id": id}
+	err :=  delete(ctx, r.collection, filter)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -73,3 +73,20 @@ func (r *TransactionRepository) Find(ctx context.Context, id string) (*transacti
 	}
 	return &result, nil
 }
+
+// Delete will remove Transaction that matching the chosen filter
+func (r *TransactionRepository) Delete(ctx context.Context, id string) error {
+	filter := bson.M{
+		"$or": bson.A{
+			bson.M{"body.from": id},
+			bson.M{"body.to": id},
+			bson.M{"triggeredBy": id},
+		},
+	}
+	err :=  delete(ctx, r.collection, filter)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

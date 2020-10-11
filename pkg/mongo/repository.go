@@ -87,3 +87,12 @@ func findAll(ctx context.Context, c *mongo.Collection, filter interface{}, resul
 
 	return cursor.All(ctx, results)
 }
+
+func delete(ctx context.Context, c *mongo.Collection, filter interface{}) error {
+	_, err := c.DeleteMany(ctx, filter)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
