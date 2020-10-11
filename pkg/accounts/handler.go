@@ -45,13 +45,7 @@ func (h *handlers) handleGetAccountBalance(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	response := AccountReadModel{
-		ID: account.ID,
-		Name: account.Name,
-		Balance: account.Balance,
-	}
-
-	kithttp.EncodeJSONResponse(ctx, w, response)
+	kithttp.EncodeJSONResponse(ctx, w, convertToAccountReadModel(account))
 }
 
 func (h *handlers) handleCreateAccount(w http.ResponseWriter, r *http.Request) {
@@ -69,13 +63,7 @@ func (h *handlers) handleCreateAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := AccountReadModel{
-		ID: newAccount.ID,
-		Name: newAccount.Name,
-		Balance: newAccount.Balance,
-	}
-
-	kithttp.EncodeJSONResponse(ctx, w, response)
+	kithttp.EncodeJSONResponse(ctx, w, convertToAccountReadModel(newAccount))
 }
 
 func (h *handlers) handleCreateAdminAccount(w http.ResponseWriter, r *http.Request) {
@@ -93,13 +81,7 @@ func (h *handlers) handleCreateAdminAccount(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	response := AccountReadModel{
-		ID: newAccount.ID,
-		Name: newAccount.Name,
-		Balance: newAccount.Balance,
-	}
-
-	kithttp.EncodeJSONResponse(ctx, w, response)
+	kithttp.EncodeJSONResponse(ctx, w, convertToAccountReadModel(newAccount))
 }
 
 func (h *handlers) handleTransaction(w http.ResponseWriter, r *http.Request) {
@@ -123,7 +105,7 @@ func (h *handlers) handleTransaction(w http.ResponseWriter, r *http.Request) {
 			kithttp.DefaultErrorEncoder(ctx, err, w)
 			return
 		}
-		kithttp.EncodeJSONResponse(ctx, w, account)
+		kithttp.EncodeJSONResponse(ctx, w, convertToAccountReadModel(account))
 
 	case transactions.Withdraw:
 		account, err := h.svc.GetAccountByID(ctx, r, transaction.Body.From)
@@ -136,7 +118,7 @@ func (h *handlers) handleTransaction(w http.ResponseWriter, r *http.Request) {
 			kithttp.DefaultErrorEncoder(ctx, err, w)
 			return
 		}
-		kithttp.EncodeJSONResponse(ctx, w, account)
+		kithttp.EncodeJSONResponse(ctx, w, convertToAccountReadModel(account))
 
 	case transactions.Transfer:
 		_, err := h.svc.GetAccountByID(ctx, r, transaction.Body.From)
@@ -150,7 +132,7 @@ func (h *handlers) handleTransaction(w http.ResponseWriter, r *http.Request) {
 			return
 		}		
 		account, err := h.svc.TransferBalance(ctx, r, transaction.Body.From, transaction.Body.To, transaction.Body.Amount )
-		kithttp.EncodeJSONResponse(ctx, w, account)
+		kithttp.EncodeJSONResponse(ctx, w, convertToAccountReadModel(account))
 
 	default:
 		kithttp.EncodeJSONResponse(ctx, w, "error: unsupport operation")
@@ -248,4 +230,12 @@ func (h *handlers) handleGetTransactionsByID(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	kithttp.EncodeJSONResponse(ctx, w, transactionList)
+}
+
+func convertToAccountReadModel(account *Account) *AccountReadModel {
+	return &AccountReadModel{
+		ID: account.ID,
+		Name: account.Name,
+		Balance: account.Balance,
+	}
 }
