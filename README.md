@@ -83,6 +83,7 @@ Please check the swagger.yaml for API description
 - [ ] better error encoding format
 - [ ] handle atomic operation
 - [ ] edge cases handling
+- [ ] screenshoot or video recording of project demo
 
 ## Refactor
 - [ ] test cases variable name
