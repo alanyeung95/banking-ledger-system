@@ -1,0 +1,13 @@
+# this file will override set config in docker-compose.yml, by file name convention
+version: "3.7"
+services:
+    test_app:
+        image: golang:1.13-alpine3.10     
+        volumes:
+        - .:/go/src/github.com/alanyeung95/banking-ledger-system
+        working_dir: /go/src/github.com/alanyeung95/banking-ledger-system
+        depends_on:
+            - "mongo"
+        environment:
+            - API_TEST_DOMAIN=http://app.network:3000
+        command: sh -c './scripts/wait-for.sh app.network:3000 -- apk add --no-cache git gcc g++ make && go test -v'

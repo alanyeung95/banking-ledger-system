@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi"
 	mongodriver "go.mongodb.org/mongo-driver/mongo"
@@ -16,10 +17,10 @@ import (
 func main() {
 	// todo: maybe remove hardcoding
 	mongoClient, err := mongo.NewClient(
-		"localhost",
+		os.Getenv("MONGODB_ADDRESSES"),
 		"",
 		"",
-		"banking",
+		os.Getenv("MONGODB_DATABASE"),
 	)
 
 	if err != nil {
@@ -49,6 +50,7 @@ func main() {
 	})
 
 	addr := fmt.Sprintf(":%d", 3000)
+	fmt.Println("Service is running on " + addr)
 	http.ListenAndServe(addr, r)
 }
 

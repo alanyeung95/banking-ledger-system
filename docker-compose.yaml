@@ -1,0 +1,26 @@
+version: "3.7"
+services:
+    app:
+        image: golang:1.13-alpine3.10
+        ports:
+            - "3000:3000"        
+        volumes:
+        - .:/go/src/github.com/alanyeung95/banking-ledger-system
+        working_dir: /go/src/github.com/alanyeung95/banking-ledger-system
+        depends_on:
+            - "mongo"
+        environment:
+            - MONGODB_ADDRESSES=mongo.network:27017
+            - MONGODB_DATABASE=banking
+        command: sh -c './scripts/wait-for.sh mongo.network:27017 -- go run main.go'            
+    mongo:
+        image: mongo:4.2
+        environment:
+            - MONGODB_ADDRESSES=mongo.network:27017
+            - MONGODB_DATABASE=banking
+
+networks:
+    default:
+        external:     
+            name: network
+                  

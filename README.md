@@ -2,19 +2,53 @@
 This is a demo project/assessment for Crypto.com Ops Team Back End Engineering Coding Challenge
 
 # Prerequisite
+
+## Using docker
+1. Docker (of course)
+
+## Using local environment
 1. Golang version 1.13
 2. MongoDB running on `localhost:27017` (sorry you have to install it manually at this stage)
 
 # Usage
 ## Run the API server 
 
+### Using docker
 `docker-compose up`
+
+### Using local environment
+
+export environment variable:
+
+```
+export MONGODB_ADDRESSES=localhost:27017
+export MONGODB_DATABASE=banking
+```
+
+Then build the binary file and execute it
+```
+go build
+./banking-ledger-system
+```
 
 the service will be running on `localhost:3000`
 
 ## Run test cases
 
-`go test -v`
+### Using docker
+`docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up --abort-on-container-exit`
+
+### Using local environment
+First plz start the server by following the above instruction
+
+```
+export API_TEST_DOMAIN=http://127.0.0.1:3000
+```
+
+Then run the test command
+```
+go test -v
+```
 
 # Assumption
 
@@ -38,11 +72,11 @@ the service will be running on `localhost:3000`
 - [x] View transaction history for Customer
 - [x] View transaction history for Operation Team
 
-- [ ] swagger doc
-- [ ] test cases
+- [x] swagger doc
+- [x] test cases
 
 ## Nice to have
-- [ ] dockerize API service
-- [ ] dockerize mongo service
+- [x] dockerize API service
+- [x] dockerize mongo service
 - [ ] better error encoding format
 - [ ] handle atomic operation

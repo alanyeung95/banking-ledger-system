@@ -1,12 +1,13 @@
 package main
 
 import (
+	"os"
     "net/http"
     "testing"
     "github.com/gavv/httpexpect"
 )
 
-var testurl string ="http://127.0.0.1:3000"
+var testurl string = os.Getenv("API_TEST_DOMAIN") 
 
 func TestRootAPI(t *testing.T) {
     e:= httpexpect.New(t, testurl)  
