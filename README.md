@@ -10,8 +10,10 @@ This is a demo project/assessment for Crypto.com Ops Team Back End Engineering C
 1. Golang version 1.13
 2. MongoDB running on `localhost:27017` (sorry you have to install it manually at this stage)
 
-# Usage
+# Setup & Run Instructions
 ## Run the API server 
+
+The API server will be running at `localhost:3000` and the mongo service will use port `27017`, so please reserve these two ports for this project
 
 ### Using docker
 `docker-compose up`
@@ -39,13 +41,14 @@ the service will be running on `localhost:3000`
 `docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up --abort-on-container-exit`
 
 ### Using local environment
-First plz start the server by following the above instruction
+First please start the server by following the above instruction
 
+Then export this environment variable
 ```
 export API_TEST_DOMAIN=http://127.0.0.1:3000
 ```
 
-Then run the test command
+Finally run the test command
 ```
 go test -v
 ```
@@ -54,24 +57,23 @@ go test -v
 
 ## User group
 1. In this system, operation team user is a kind of admin user and have more permission such as `fixing transaction`. 
-2. Normally, admin user should be created by superuser. In this project for simplicity, we have another API to create such kind of user.
+2. Normally, admin user should be created by superuser. In this project for simplicity, we have another API (`localhost:3000/accounts/create-admin`) to create such kind of user.
 3. `Fix a withdrawal or deposit transaction` is one of the transaction that `Operation team` process, and it will show on the transaction history.
 
 ## Others
-1. let the account id format be uuid, although in reality the format will be in different pattern
-2. Assume there is not authentication service on this API service
+1. For simplicity, this project doesn't have login service. So instead of using `jwt` for authentication service, you just need to include the `account_id` on the request header.
 
 # Priority list
-## Must do
-- [x] Create a new bank account
-- [x] Make a withdraw
-- [x] Make a deposit
-- [x] Make a transfer between two accounts
-- [x] Fix a withdrawal or deposit transaction (here I assume `fix` mean `undo`)
-- [x] View current balance for Customer
-- [x] View transaction history for Customer
-- [x] View transaction history for Operation Team
-
+## Requirements
+Please check the swagger.yaml for API description
+- [x] Create a new bank account `POST /accounts/create` and `POST /accounts/create-admin`
+- [x] Make a withdraw `POST /transactions`
+- [x] Make a deposit `POST /transactions`
+- [x] Make a transfer between two accounts `POST /transactions`
+- [x] Fix a withdrawal or deposit transaction (here I assume `fix` mean `undo`) `POST /transactions/{id}/undo`
+- [x] View current balance for Customer `GET /accounts/{id}`
+- [x] View transaction history for Customer `GET /transactions`
+- [x] View transaction history for Operation Team `GET /transactions`
 - [x] swagger doc
 - [x] test cases
 
@@ -80,3 +82,13 @@ go test -v
 - [x] dockerize mongo service
 - [ ] better error encoding format
 - [ ] handle atomic operation
+- [ ] edge cases handling
+
+## Refactor
+- [ ] test cases variable name
+- [ ] code formatting
+
+# Development Notes
+Given the limited time, I chose CRUD over CQRS. But CQRS is a better design for this project.
+
+Compare with CRUD design, event-sourcing is a more suitable approach for this project. As the single source of truth will be the trasanction events. If we use CRUD, we need to maintain account and transcation record and we need to make sure these two records are in sync.

@@ -93,6 +93,14 @@ paths:
       tags:
         - "Transactions"
       summary: Perform withdraw, deposit and transfer operation
+      parameters:
+        - in: header
+          name: account_id
+          schema:
+            type: string
+            format: uuid
+            example: 67623cbc-b1a6-4aab-8244-158c557dca25
+          required: true      
       requestBody:
         required: true
         content:
@@ -113,6 +121,13 @@ paths:
         - "Transactions"
       summary: Undo a transaction, should be performed by operation team only. It will return an updated balance of the account
       parameters:
+        - in: header
+          name: account_id
+          schema:
+            type: string
+            format: uuid
+            example: 67623cbc-b1a6-4aab-8244-158c557dca25
+          required: true            
         - in: path
           name: id
           schema:
