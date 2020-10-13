@@ -1,8 +1,8 @@
 package accounts
 
 import (
-	"fmt"
 	"context"
+	"fmt"
 	"net/http"
 
 	uuid "github.com/satori/go.uuid"
@@ -66,17 +66,17 @@ func (s *service) UpdateBalance(ctx context.Context, r *http.Request, id string,
 }
 
 func (s *service) TransferBalance(ctx context.Context, r *http.Request, from string, to string, amount int) (*Account, error) {
-	sourceAccount, err := s.UpdateBalance(ctx, r, from, -amount )
+	sourceAccount, err := s.UpdateBalance(ctx, r, from, -amount)
 	if err != nil {
 		return nil, err
 	}
-	_, err = s.UpdateBalance(ctx, r, to, amount )
+	_, err = s.UpdateBalance(ctx, r, to, amount)
 	if err != nil {
 		return nil, err
-	}		
+	}
 	return sourceAccount, nil
 }
 
-func (s *service) DeleteAccountByID(ctx context.Context, r *http.Request, id string)  error {
+func (s *service) DeleteAccountByID(ctx context.Context, r *http.Request, id string) error {
 	return s.repository.Delete(ctx, id)
 }

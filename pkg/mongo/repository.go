@@ -11,8 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-
-
 // NewClient is the function to create an new mongo connection
 func NewClient(addresses, username, password, database string) (*mongo.Client, error) {
 	// 	uri := fmt.Sprintf("mongodb://%s:%s@%s/%s", username, password, addresses, database)

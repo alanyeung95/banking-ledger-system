@@ -7,7 +7,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/alanyeung95/banking-ledger-system/pkg/accounts"
-
 )
 
 // NewAccountRepository is the repo to store account model
@@ -62,19 +61,19 @@ func (r *AccountRepository) UpdateBalance(ctx context.Context, id string, amount
 			"balance": amount,
 		},
 	}
-	
-	err :=  findAndUpdateOne(ctx, r.collection, filter, update, &result)
+
+	err := findAndUpdateOne(ctx, r.collection, filter, update, &result)
 	if err != nil {
 		return nil, err
 	}
 
-	return &result,nil
+	return &result, nil
 }
 
 // Delete will remove Account that matching the chosen filter
 func (r *AccountRepository) Delete(ctx context.Context, id string) error {
 	filter := bson.M{"_id": id}
-	err :=  delete(ctx, r.collection, filter)
+	err := delete(ctx, r.collection, filter)
 	if err != nil {
 		return err
 	}

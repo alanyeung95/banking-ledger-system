@@ -8,7 +8,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/alanyeung95/banking-ledger-system/pkg/transactions"
-
 )
 
 // NewTransactionRepository is the repo to store transaction model
@@ -55,7 +54,7 @@ func (r *TransactionRepository) FindAll(ctx context.Context, id string, asc int)
 	findOption := options.Find()
 	findOption.SetSort(bson.M{"time": asc})
 
-	if err := findAll(ctx, r.collection, filter, &transactionList, findOption); err != nil{
+	if err := findAll(ctx, r.collection, filter, &transactionList, findOption); err != nil {
 		return nil, err
 	}
 	return transactionList, nil
@@ -83,7 +82,7 @@ func (r *TransactionRepository) Delete(ctx context.Context, id string) error {
 			bson.M{"triggeredBy": id},
 		},
 	}
-	err :=  delete(ctx, r.collection, filter)
+	err := delete(ctx, r.collection, filter)
 	if err != nil {
 		return err
 	}

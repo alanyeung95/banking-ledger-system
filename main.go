@@ -1,4 +1,4 @@
-package main	
+package main
 
 import (
 	"fmt"
@@ -8,14 +8,12 @@ import (
 	"github.com/go-chi/chi"
 	mongodriver "go.mongodb.org/mongo-driver/mongo"
 
-	"github.com/alanyeung95/banking-ledger-system/pkg/mongo"
 	"github.com/alanyeung95/banking-ledger-system/pkg/accounts"
+	"github.com/alanyeung95/banking-ledger-system/pkg/mongo"
 	"github.com/alanyeung95/banking-ledger-system/pkg/transactions"
-
-
 )
+
 func main() {
-	// todo: maybe remove hardcoding
 	mongoClient, err := mongo.NewClient(
 		os.Getenv("MONGODB_ADDRESSES"),
 		"",
@@ -24,7 +22,7 @@ func main() {
 	)
 
 	if err != nil {
-		fmt.Println("Cannot connect to mongoDB: "+ err.Error())
+		fmt.Println("Cannot connect to mongoDB: " + err.Error())
 		return
 	}
 
@@ -34,13 +32,11 @@ func main() {
 		return
 	}
 
-	
 	transSrv, err := newTransactionSrv(mongoClient)
 	if err != nil {
 		fmt.Println("Cannot initialize account service: " + err.Error())
 		return
 	}
-
 
 	r := chi.NewRouter()
 
@@ -71,8 +67,7 @@ func newTransactionSrv(client *mongodriver.Client) (transactions.Service, error)
 		return nil, err
 	}
 
-	srv := transactions.NewService( transactionRepository)
+	srv := transactions.NewService(transactionRepository)
 
 	return srv, nil
 }
- 
