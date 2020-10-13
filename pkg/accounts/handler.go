@@ -215,7 +215,7 @@ func (h *handlers) handleUndoTransaction(w http.ResponseWriter, r *http.Request)
 			return
 		}
 
-		kithttp.EncodeJSONResponse(ctx, w, account)
+		kithttp.EncodeJSONResponse(ctx, w, convertToAccountReadModel(account))
 
 	case transactions.Withdraw:
 		account, err := h.svc.UpdateBalance(ctx, r, transaction.Body.From, transaction.Body.Amount)
@@ -237,7 +237,7 @@ func (h *handlers) handleUndoTransaction(w http.ResponseWriter, r *http.Request)
 			return
 		}
 
-		kithttp.EncodeJSONResponse(ctx, w, account)
+		kithttp.EncodeJSONResponse(ctx, w, convertToAccountReadModel(account))
 
 	default:
 		kithttp.DefaultErrorEncoder(ctx, errors.NewBadRequestError(er.New("error: unsupport operation, only withdraw or deposit operation is allowed to be undo")), w)
