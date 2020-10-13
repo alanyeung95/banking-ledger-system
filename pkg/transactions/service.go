@@ -37,6 +37,6 @@ func (s *service) GetTransactionByID(ctx context.Context, r *http.Request, id st
 	return s.repository.Find(ctx, id)
 }
 
-func (s *service) DeleteTransactions(ctx context.Context, r *http.Request, id string)  error {
+func (s *service) DeleteTransactions(ctx context.Context, r *http.Request, id string) error {
 	return s.repository.Delete(ctx, id)
 }

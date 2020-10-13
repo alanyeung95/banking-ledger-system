@@ -77,17 +77,21 @@ Please check the swagger.yaml for API description
 - [x] swagger doc
 - [x] test cases
 
+- [ ] edge cases handling
+    - [x] check account balance before withdraw and transfer
+    - [x] check target account existence before transfer
+
 ## Nice to have
 - [x] dockerize API service
 - [x] dockerize mongo service
 - [ ] better error encoding format
 - [ ] handle atomic operation
-- [ ] edge cases handling
 - [ ] screenshoot or video recording of project demo
 
 ## Refactor
 - [ ] test cases variable name
 - [ ] code formatting
+- [ ] return error code
 
 # Development Notes
 Given the limited time, I chose CRUD over CQRS. But CQRS is a better design for this project.
