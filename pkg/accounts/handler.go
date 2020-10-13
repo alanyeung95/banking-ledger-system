@@ -2,6 +2,7 @@ package accounts
 
 import (
 	"encoding/json"
+	er "errors"
 	"net/http"
 	"strconv"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/go-chi/chi"
 	kithttp "github.com/go-kit/kit/transport/http"
 
+	"github.com/alanyeung95/banking-ledger-system/pkg/errors"
 	"github.com/alanyeung95/banking-ledger-system/pkg/transactions"
 )
 
@@ -46,7 +48,7 @@ func (h *handlers) handleGetAccountBalance(w http.ResponseWriter, r *http.Reques
 
 	account, err := h.svc.GetAccountByID(ctx, r, id)
 	if err != nil {
-		kithttp.DefaultErrorEncoder(ctx, err, w)
+		kithttp.DefaultErrorEncoder(ctx, errors.NewResourceNotFoundError(err), w)
 		return
 	}
 
@@ -64,7 +66,7 @@ func (h *handlers) handleCreateAccount(w http.ResponseWriter, r *http.Request) {
 
 	newAccount, err := h.svc.CreateAccount(ctx, r, &model)
 	if err != nil {
-		kithttp.DefaultErrorEncoder(ctx, err, w)
+		kithttp.DefaultErrorEncoder(ctx, errors.NewServerError(err), w)
 		return
 	}
 
@@ -76,13 +78,13 @@ func (h *handlers) handleCreateAdminAccount(w http.ResponseWriter, r *http.Reque
 
 	var model Account
 	if err := json.NewDecoder(r.Body).Decode(&model); err != nil {
-		kithttp.DefaultErrorEncoder(ctx, err, w)
+		kithttp.DefaultErrorEncoder(ctx, errors.NewServerError(err), w)
 		return
 	}
 
 	newAccount, err := h.svc.CreateAdminAccount(ctx, r, &model)
 	if err != nil {
-		kithttp.DefaultErrorEncoder(ctx, err, w)
+		kithttp.DefaultErrorEncoder(ctx, errors.NewServerError(err), w)
 		return
 	}
 
@@ -93,19 +95,19 @@ func (h *handlers) handleTransaction(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	triggeredBy := r.Header.Get("account_id")
 	if triggeredBy == "" {
-		kithttp.EncodeJSONResponse(ctx, w, "Please put the 'account_id' on the request header")
+		kithttp.DefaultErrorEncoder(ctx, errors.NewBadRequestError(er.New("Please put the 'account_id' on the request header")), w)
 		return
 	}
 
 	var transaction transactions.Transaction
 	if err := json.NewDecoder(r.Body).Decode(&transaction); err != nil {
-		kithttp.DefaultErrorEncoder(ctx, err, w)
+		kithttp.DefaultErrorEncoder(ctx, errors.NewServerError(err), w)
 		return
 	}
 
 	account, err := h.svc.GetAccountByID(ctx, r, triggeredBy)
 	if err != nil {
-		kithttp.DefaultErrorEncoder(ctx, err, w)
+		kithttp.DefaultErrorEncoder(ctx, errors.NewResourceNotFoundError(err), w)
 		return
 	}
 
@@ -113,7 +115,7 @@ func (h *handlers) handleTransaction(w http.ResponseWriter, r *http.Request) {
 	case transactions.Deposit:
 		account, err = h.svc.UpdateBalance(ctx, r, triggeredBy, transaction.Body.Amount)
 		if err != nil {
-			kithttp.DefaultErrorEncoder(ctx, err, w)
+			kithttp.DefaultErrorEncoder(ctx, errors.NewResourceNotFoundError(err), w)
 			return
 		}
 		transaction.Body.To = triggeredBy
@@ -127,7 +129,7 @@ func (h *handlers) handleTransaction(w http.ResponseWriter, r *http.Request) {
 
 		updatedAccount, err := h.svc.UpdateBalance(ctx, r, triggeredBy, -transaction.Body.Amount)
 		if err != nil {
-			kithttp.DefaultErrorEncoder(ctx, err, w)
+			kithttp.DefaultErrorEncoder(ctx, errors.NewServerError(err), w)
 			return
 		}
 		transaction.Body.From = triggeredBy
@@ -141,18 +143,18 @@ func (h *handlers) handleTransaction(w http.ResponseWriter, r *http.Request) {
 
 		_, err = h.svc.GetAccountByID(ctx, r, transaction.Body.To)
 		if err != nil {
-			kithttp.DefaultErrorEncoder(ctx, err, w)
+			kithttp.DefaultErrorEncoder(ctx, errors.NewResourceNotFoundError(err), w)
 			return
 		}
 		updatedAccount, err := h.svc.TransferBalance(ctx, r, triggeredBy, transaction.Body.To, transaction.Body.Amount)
 		if err != nil {
-			kithttp.DefaultErrorEncoder(ctx, err, w)
+			kithttp.DefaultErrorEncoder(ctx, errors.NewServerError(err), w)
 			return
 		}
 		kithttp.EncodeJSONResponse(ctx, w, convertToAccountReadModel(updatedAccount))
 
 	default:
-		kithttp.EncodeJSONResponse(ctx, w, "error: unsupport operation")
+		kithttp.DefaultErrorEncoder(ctx, errors.NewBadRequestError(er.New("error: unsupport operation")), w)
 		return
 	}
 
@@ -161,7 +163,7 @@ func (h *handlers) handleTransaction(w http.ResponseWriter, r *http.Request) {
 
 	_, err = h.transSrv.RecordTransaction(ctx, r, &transaction)
 	if err != nil {
-		kithttp.DefaultErrorEncoder(ctx, err, w)
+		kithttp.DefaultErrorEncoder(ctx, errors.NewServerError(err), w)
 		return
 	}
 }
@@ -178,17 +180,17 @@ func (h *handlers) handleUndoTransaction(w http.ResponseWriter, r *http.Request)
 	// permission checking
 	account, err := h.svc.GetAccountByID(ctx, r, triggeredBy)
 	if err != nil {
-		kithttp.DefaultErrorEncoder(ctx, err, w)
+		kithttp.DefaultErrorEncoder(ctx, errors.NewResourceNotFoundError(err), w)
 		return
 	}
-	if account.UserGroup != "operation" {
-		kithttp.EncodeJSONResponse(ctx, w, "Permission error, only user group 'operation' has this permission")
+	if account.UserGroup != OperationTeam {
+		kithttp.DefaultErrorEncoder(ctx, errors.NewUnauthorizedError(er.New("Permission error, only user group 'operation' has this permission")), w)
 		return
 	}
 
 	transaction, err := h.transSrv.GetTransactionByID(ctx, r, id)
 	if err != nil {
-		kithttp.DefaultErrorEncoder(ctx, err, w)
+		kithttp.DefaultErrorEncoder(ctx, errors.NewResourceNotFoundError(err), w)
 		return
 	}
 
@@ -196,7 +198,7 @@ func (h *handlers) handleUndoTransaction(w http.ResponseWriter, r *http.Request)
 	case transactions.Deposit:
 		account, err := h.svc.UpdateBalance(ctx, r, transaction.Body.To, -transaction.Body.Amount)
 		if err != nil {
-			kithttp.DefaultErrorEncoder(ctx, err, w)
+			kithttp.DefaultErrorEncoder(ctx, errors.NewResourceNotFoundError(err), w)
 			return
 		}
 
@@ -209,7 +211,7 @@ func (h *handlers) handleUndoTransaction(w http.ResponseWriter, r *http.Request)
 
 		_, err = h.transSrv.RecordTransaction(ctx, r, transaction)
 		if err != nil {
-			kithttp.DefaultErrorEncoder(ctx, err, w)
+			kithttp.DefaultErrorEncoder(ctx, errors.NewServerError(err), w)
 			return
 		}
 
@@ -218,7 +220,7 @@ func (h *handlers) handleUndoTransaction(w http.ResponseWriter, r *http.Request)
 	case transactions.Withdraw:
 		account, err := h.svc.UpdateBalance(ctx, r, transaction.Body.From, transaction.Body.Amount)
 		if err != nil {
-			kithttp.DefaultErrorEncoder(ctx, err, w)
+			kithttp.DefaultErrorEncoder(ctx, errors.NewResourceNotFoundError(err), w)
 			return
 		}
 
@@ -231,14 +233,14 @@ func (h *handlers) handleUndoTransaction(w http.ResponseWriter, r *http.Request)
 
 		_, err = h.transSrv.RecordTransaction(ctx, r, transaction)
 		if err != nil {
-			kithttp.DefaultErrorEncoder(ctx, err, w)
+			kithttp.DefaultErrorEncoder(ctx, errors.NewServerError(err), w)
 			return
 		}
 
 		kithttp.EncodeJSONResponse(ctx, w, account)
 
 	default:
-		kithttp.EncodeJSONResponse(ctx, w, "error: unsupport operation, only withdraw or deposit operation is allowed to be undo")
+		kithttp.DefaultErrorEncoder(ctx, errors.NewBadRequestError(er.New("error: unsupport operation, only withdraw or deposit operation is allowed to be undo")), w)
 		return
 	}
 }
@@ -252,7 +254,7 @@ func (h *handlers) handleGetAccountTransactions(w http.ResponseWriter, r *http.R
 	}
 	transactionList, err := h.transSrv.GetTransactionsByID(ctx, r, id, asc)
 	if err != nil {
-		kithttp.DefaultErrorEncoder(ctx, err, w)
+		kithttp.DefaultErrorEncoder(ctx, errors.NewResourceNotFoundError(err), w)
 		return
 	}
 	kithttp.EncodeJSONResponse(ctx, w, transactionList)
