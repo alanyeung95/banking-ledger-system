@@ -64,6 +64,11 @@ func (h *handlers) handleCreateAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if model.Name == "" || model.Password == "" {
+		kithttp.DefaultErrorEncoder(ctx, errors.NewBadRequestError(er.New("name or password cannot be empty")), w)
+		return
+	}
+
 	newAccount, err := h.svc.CreateAccount(ctx, r, &model)
 	if err != nil {
 		kithttp.DefaultErrorEncoder(ctx, errors.NewServerError(err), w)
@@ -123,7 +128,7 @@ func (h *handlers) handleTransaction(w http.ResponseWriter, r *http.Request) {
 
 	case transactions.Withdraw:
 		if account.Balance < 0 || account.Balance < transaction.Body.Amount {
-			kithttp.EncodeJSONResponse(ctx, w, "error: not enough balance to process the transaction")
+			kithttp.DefaultErrorEncoder(ctx, errors.NewBadRequestError(er.New("error: not enough balance to process the transaction")), w)
 			return
 		}
 
@@ -137,7 +142,7 @@ func (h *handlers) handleTransaction(w http.ResponseWriter, r *http.Request) {
 
 	case transactions.Transfer:
 		if account.Balance < 0 || account.Balance < transaction.Body.Amount {
-			kithttp.EncodeJSONResponse(ctx, w, "error: not enough balance to process the transaction")
+			kithttp.DefaultErrorEncoder(ctx, errors.NewBadRequestError(er.New("error: not enough balance to process the transaction")), w)
 			return
 		}
 

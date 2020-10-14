@@ -89,11 +89,10 @@ Please check the swagger.yaml for API description
 - [x] View current balance for Customer `GET /accounts/{id}`
 - [x] View transaction history for Customer `GET /transactions`
 - [x] View transaction history for Operation Team `GET /transactions`
-- [x] swagger doc
-- [x] test cases
-
-- [ ] edge cases handling (if any)
-  - [ ] error handling when missing field in request 
+- [x] Swagger doc
+- [x] Test cases
+  - [x] Happy path
+  - [x] Negative test cases (see next next section)
 
 ## Nice to have
 - [x] dockerize API service
@@ -102,6 +101,10 @@ Please check the swagger.yaml for API description
 - [ ] handle atomic operation
 - [x] screenshoot or video recording of project demo
 - [x] Makefile to simplify startup/test case command (docker only)
+
+## Negative test cases
+  - [x] Create account fail
+  - [x] Withdraw when the account balance is 0
 
 # Development Notes
 Given the limited time, I chose CRUD over Event-Sourcing. But Event-Sourcing is a much better design option for this project.

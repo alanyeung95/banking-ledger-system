@@ -17,6 +17,69 @@ func TestRootAPI(t *testing.T) {
 		Status(http.StatusOK)
 }
 
+func TestCreateAccountFailedCase(t *testing.T) {
+	e := httpexpect.New(t, testurl)
+
+	// create account
+	postdata := map[string]interface{}{
+		"name":     "",
+		"password": "",
+	}
+	contentType := "application/json;charset=utf-8"
+
+	e.POST("/accounts/create").
+		WithHeader("ContentType", contentType).
+		WithJSON(postdata).
+		Expect().
+		Status(http.StatusBadRequest)
+}
+
+func TestWithdrawFailedCase(t *testing.T) {
+	e := httpexpect.New(t, testurl)
+
+	// create account
+	postdata := map[string]interface{}{
+		"name":     "testing_user_name_1",
+		"password": "xxxxx",
+	}
+	contentType := "application/json;charset=utf-8"
+
+	obj := e.POST("/accounts/create").
+		WithHeader("ContentType", contentType).
+		WithJSON(postdata).
+		Expect().
+		Status(http.StatusOK).
+		JSON().
+		Object().
+		ContainsKey("name").
+		ValueEqual("name", "testing_user_name_1")
+	testingAccountOneID := obj.Value("id").String().Raw()
+
+	// test withdraw
+	postdata = map[string]interface{}{
+		"operation": "withdraw",
+		"body": map[string]interface{}{
+			"amount": 100,
+		},
+	}
+
+	e.POST("/transactions").
+		WithHeader("ContentType", contentType).
+		WithHeader("account_id", testingAccountOneID).
+		WithJSON(postdata).
+		Expect().
+		Status(http.StatusBadRequest)
+
+		// clean up
+	e.DELETE("/accounts/" + testingAccountOneID).
+		Expect().
+		Status(http.StatusOK)
+
+	e.DELETE("/accounts/" + testingAccountOneID + "/transactions").
+		Expect().
+		Status(http.StatusOK)
+}
+
 func TestDepositAndWithdrawAndGetBalance(t *testing.T) {
 	e := httpexpect.New(t, testurl)
 
