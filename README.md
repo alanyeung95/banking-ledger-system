@@ -9,7 +9,7 @@ Demo link: https://youtu.be/1J2_9MB0beg
 1. Docker (of course)
 
 ## Using local environment
-1. Golang version 1.13
+1. Golang version 1.13 or above
 2. MongoDB running on `localhost:27017` (sorry you have to install it manually at this stage)
 
 # Setup & Run Instructions
@@ -18,7 +18,10 @@ Demo link: https://youtu.be/1J2_9MB0beg
 The API server will be running at `localhost:3000` and the mongo service will use port `27017`, so please reserve these two ports for this project
 
 ### Using docker
-`docker-compose up`
+```
+docker network create network
+docker-compose up
+```
 
 ### Using local environment
 
@@ -80,6 +83,7 @@ Please check the swagger.yaml for API description
 - [x] test cases
 
 - [ ] edge cases handling (if any)
+  - [ ] error handling when missing field in request 
 
 ## Nice to have
 - [x] dockerize API service
@@ -87,6 +91,7 @@ Please check the swagger.yaml for API description
 - [x] return error status code
 - [ ] handle atomic operation
 - [x] screenshoot or video recording of project demo
+- [ ] Makefile to simplify startup/test case command
 
 # Development Notes
 Given the limited time, I chose CRUD over CQRS. But CQRS is a better design for this project.
