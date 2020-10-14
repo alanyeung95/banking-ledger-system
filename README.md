@@ -103,7 +103,7 @@ Please check the swagger.yaml for API description
 - [x] Makefile to simplify startup/test case command (docker only)
 
 ## Negative test cases
-  - [x] Create account fail
+  - [x] Create account when account name or password is empty
   - [x] Withdraw when the account balance is 0
 
 # Development Notes
