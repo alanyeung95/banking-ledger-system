@@ -94,6 +94,6 @@ Please check the swagger.yaml for API description
 - [ ] Makefile to simplify startup/test case command
 
 # Development Notes
-Given the limited time, I chose CRUD over CQRS. But CQRS is a better design for this project.
+Given the limited time, I chose CRUD over Event-Sourcing. But Event-Sourcing is a much better design option for this project.
 
-Compare with CRUD design, event-sourcing is a more suitable approach for this project. As the single source of truth will be the trasanction events. If we use CRUD, we need to maintain account and transcation record and we need to make sure these two records are in sync.
+Compare with CRUD design,  the single source of truth in Event-Sourcing will be the trasanction events. If we use CRUD, we need to maintain both account and transcation record and we need to make sure these two records are in sync.
