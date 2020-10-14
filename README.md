@@ -23,6 +23,11 @@ docker network create network
 docker-compose up
 ```
 
+or just
+```
+make run
+```
+
 ### Using local environment
 
 export environment variable:
@@ -44,6 +49,11 @@ the service will be running on `localhost:3000`
 
 ### Using docker
 `docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up --abort-on-container-exit`
+
+or just
+```
+make test
+```
 
 ### Using local environment
 First please start the server by following the above instruction
@@ -91,7 +101,7 @@ Please check the swagger.yaml for API description
 - [x] return error status code
 - [ ] handle atomic operation
 - [x] screenshoot or video recording of project demo
-- [ ] Makefile to simplify startup/test case command
+- [x] Makefile to simplify startup/test case command (docker only)
 
 # Development Notes
 Given the limited time, I chose CRUD over Event-Sourcing. But Event-Sourcing is a much better design option for this project.
