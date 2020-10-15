@@ -4,16 +4,17 @@ This is a demo project/assessment for Crypto.com Ops Team Back End Engineering C
 Demo link: https://youtu.be/1J2_9MB0beg
 
 -------------------------
-- [Requirements](#requirements)
+- [System Requirements](#system-requirements)
 - [Setup / Running Instructions](#setup--running-instructions)
 - [Project Requirements](#project-requirements)
 - [Project Assumptions](#project-assumptions)
+- [System Schema](#system-schema)
 - [Development Notes](#development-notes)
 
 -------------------------
-## Requirements
+## System Requirements
 
-### Using docker
+### Using docker (recommended)
 1. Docker (of course)
 
 ### Using local environment
@@ -116,6 +117,17 @@ Please check the swagger.yaml for API description
 
 ### Others
 1. For simplicity, this project doesn't have login service. So instead of using `jwt` for authentication service, you just need to include the `account_id` on the request header.
+
+-------------------------
+## System Schema
+
+### Model Schema
+[Account Model](https://github.com/alanyeung95/banking-ledger-system/blob/main/pkg/accounts/model.go)
+
+[Transaction Model](https://github.com/alanyeung95/banking-ledger-system/blob/main/pkg/transactions/model.go)
+
+### REST API Schema
+[Swagger Doc](https://github.com/alanyeung95/banking-ledger-system/blob/main/swagger.yaml)
 
 -------------------------
 ## Development Notes
