@@ -3,7 +3,15 @@ This is a demo project/assessment for Crypto.com Ops Team Back End Engineering C
 
 Demo link: https://youtu.be/1J2_9MB0beg
 
-## Dependency
+-------------------------
+- [Requirements](#requirements)
+- [Setup / Running Instructions](#setup--running-instructions)
+- [Project Assumptions](#project-assumptions)
+- [Project Requirements](#project-requirements)
+- [Development Notes](#development-notes)
+
+-------------------------
+## Requirements
 
 ### Using docker
 1. Docker (of course)
@@ -12,7 +20,7 @@ Demo link: https://youtu.be/1J2_9MB0beg
 1. Golang version 1.13 or above
 2. MongoDB running on `localhost:27017` (sorry you have to install it manually at this stage)
 
-## Setup & Run Instructions
+## Setup / Running Instructions
 ### Run the API server 
 
 The API server will be running at `localhost:3000` and the mongo service will use port `27017`, so please reserve these two ports for this project
@@ -68,7 +76,8 @@ Finally run the test command
 go test -v
 ```
 
-## Assumption
+-------------------------
+## Project Assumptions
 
 ### User group
 1. In this system, operation team user is a kind of admin user and have more permission such as `fixing transaction`. 
@@ -78,8 +87,9 @@ go test -v
 ### Others
 1. For simplicity, this project doesn't have login service. So instead of using `jwt` for authentication service, you just need to include the `account_id` on the request header.
 
-## Priority list
-### Requirements
+-------------------------
+## Project Requirements
+### Basic Requirements
 Please check the swagger.yaml for API description
 - [x] Create a new bank account `POST /accounts/create` and `POST /accounts/create-admin`
 - [x] Make a withdraw `POST /transactions`
@@ -105,7 +115,8 @@ Please check the swagger.yaml for API description
 ### Negative test cases
   - [x] Create account when account name or password is empty
   - [x] Withdraw when the account balance is 0
-
+  
+-------------------------
 ## Development Notes
 Given the limited time, I chose CRUD over Event-Sourcing. But Event-Sourcing is a much better design option for this project.
 
