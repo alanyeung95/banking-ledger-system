@@ -20,6 +20,7 @@ Demo link: https://youtu.be/1J2_9MB0beg
 1. Golang version 1.13 or above
 2. MongoDB running on `localhost:27017` (sorry you have to install it manually at this stage)
 
+-------------------------
 ## Setup / Running Instructions
 ### Run the API server 
 
