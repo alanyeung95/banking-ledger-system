@@ -6,8 +6,8 @@ Demo link: https://youtu.be/1J2_9MB0beg
 -------------------------
 - [Requirements](#requirements)
 - [Setup / Running Instructions](#setup--running-instructions)
-- [Project Assumptions](#project-assumptions)
 - [Project Requirements](#project-requirements)
+- [Project Assumptions](#project-assumptions)
 - [Development Notes](#development-notes)
 
 -------------------------
@@ -78,17 +78,6 @@ go test -v
 ```
 
 -------------------------
-## Project Assumptions
-
-### User group
-1. In this system, operation team user is a kind of admin user and have more permission such as `fixing transaction`. 
-2. Normally, admin user should be created by superuser. In this project for simplicity, we have another API (`localhost:3000/accounts/create-admin`) to create such kind of user.
-3. `Fix a withdrawal or deposit transaction` is one of the transaction that `Operation team` process, and it will show on the transaction history.
-
-### Others
-1. For simplicity, this project doesn't have login service. So instead of using `jwt` for authentication service, you just need to include the `account_id` on the request header.
-
--------------------------
 ## Project Requirements
 ### Basic Requirements
 Please check the swagger.yaml for API description
@@ -116,7 +105,18 @@ Please check the swagger.yaml for API description
 ### Negative test cases
   - [x] Create account when account name or password is empty
   - [x] Withdraw when the account balance is 0
-  
+
+-------------------------
+## Project Assumptions
+
+### User group
+1. In this system, operation team user is a kind of admin user and have more permission such as `fixing transaction`. 
+2. Normally, admin user should be created by superuser. In this project for simplicity, we have another API (`localhost:3000/accounts/create-admin`) to create such kind of user.
+3. `Fix a withdrawal or deposit transaction` is one of the transaction that `Operation team` process, and it will show on the transaction history.
+
+### Others
+1. For simplicity, this project doesn't have login service. So instead of using `jwt` for authentication service, you just need to include the `account_id` on the request header.
+
 -------------------------
 ## Development Notes
 Given the limited time, I chose CRUD over Event-Sourcing. But Event-Sourcing is a much better design option for this project.
