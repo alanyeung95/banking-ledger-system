@@ -20,13 +20,3 @@ type AccountReadModel struct {
 	Name    string `json:"name"    bson:"name"`
 	Balance int    `json:"balance"    bson:"balance"`
 }
-
-type AccountLoginParam struct {
-	Email    string `json:"email"    bson:"email"`
-	Password string `json:"password"    bson:"password"`
-}
-
-type LoginResponse struct {
-	Status bool   `json:"status"    bson:"status"`
-	Token  string `json:"token"    bson:"token"`
-}
