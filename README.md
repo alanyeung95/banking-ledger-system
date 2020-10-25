@@ -1,5 +1,5 @@
 # Banking Ledger System
-This is a demo project/assessment for Crypto.com Ops Team Back End Engineering Coding Challenge
+This is a demo project/assessment for coding challenge
 
 Demo link: https://youtu.be/1J2_9MB0beg
 
@@ -106,6 +106,9 @@ Please check the swagger.yaml for API description
 ### Negative test cases
   - [x] Create account when account name or password is empty
   - [x] Withdraw when the account balance is 0
+
+### Furture enhancement
+- [ ] Using Event Sourcing
 
 -------------------------
 ## Project Assumptions
